@@ -3,39 +3,46 @@ from app_base import *
 
 DB = DashBoard()
 
-st.set_page_config(layout="wide")
+st.set_page_config(page_title="MURPH Analytics",
+                   page_icon="📊",
+                   layout="wide",
+                   menu_items = {"About": "Source: https://github.com/vinay-ram1999/CFD-dashboard \n MURPH Solver: https://github.com/UnstructuredFVM/",
+                                 "Report a Bug": "mailto:vinayramgazula@gmail.com"})
 
-st.title("MURPH Dashboard")
+st.title("MURPH Analytics")
 
-with st.expander('About this app'):
-    st.markdown("This is an interactive dashboard built to post-process the simulation data generated from the MURPH Solver.")
+with st.expander("About", expanded=False):
+    st.markdown("This is an interactive dashboard built to post-process and perform different analytical studies on the simulation data generated from the MURPH Solver.")
 
 # sidebar arguments
 st.sidebar.title('Menu')
 
-unstructured = st.sidebar.header("Unstructured")
+st.sidebar.header("Unstructured")
+section = st.sidebar.radio("", ["2D", "3D", "Grid Independence"], label_visibility="collapsed")
 
-mesh_2d = st.sidebar.checkbox("2D")
-mesh_3d = st.sidebar.checkbox("3D")
-grid_ind = st.sidebar.checkbox("Grid Independence")
-
-if mesh_2d:
+if section == "2D":
     # Upload results
     DB.load_simulation_data()
 
+    view, grid, contour = st.tabs(["View Dataset", "Mesh Geometry", "Contour Plot"])
+
     # View Dataset
-    df = DB.view_dataset
+    with view:
+        df_list = DB.view_dataset()
 
     # Mesh Geometry
-    DB.Grid_2D()
+    with grid:
+        grid2D = DB.grid_2D()
 
-    contours = st.checkbox("Contour Plot")
-    if contours:
-        st.info("Not implemented yet!!!")
+    # Contour Plot
+    with contour:
+        contour2D = DB.surface_contours()
 
-elif mesh_3d:
+
+if section == "3D":
     st.info("3-D is not implemented yet!!!")
 
-elif grid_ind:
+
+if section == "Grid Independence":
     st.info("Grid Independence is not implemented yet!!!")
 
